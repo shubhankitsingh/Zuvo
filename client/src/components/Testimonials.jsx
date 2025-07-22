@@ -24,7 +24,7 @@ const Testimonials = () => {
         },
         {
             image: assets.testimonial_image_2,
-            name: 'Ankit Singh',
+            name: 'Prajjaval Singh',
             location:'Kanpur, Uttar Pradesh',
             date: 'June 5, 2025',
             testimonial:'Consistently great service from Zuvo. Excellent cars and helpful staff every time. My top choice for rentals',
