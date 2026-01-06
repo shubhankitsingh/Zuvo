@@ -6,7 +6,7 @@ import Home from './pages/Home';
 import Cars from './pages/Cars';
 import CarDetails from './pages/CarDetails';
 import Footer from './components/Footer';
-import Layout from './pages/owner/layout';
+import Layout from './pages/owner/Layout';
 import Dashboard from './pages/owner/Dashboard';
 import AddCar from './pages/owner/AddCar';
 import ManageCars from './pages/owner/ManageCars';
