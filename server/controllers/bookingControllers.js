@@ -86,9 +86,9 @@ export const getUserBookings= async(req,res)=>{
 // Api to get owner booking
 export const getOwnerBookings= async(req,res)=>{
     try {
-        if(req.user.role!==owner) return res.json({success:false,message:"Access denied"});
+        if(req.user.role!=='owner') return res.json({success:false,message:"Access denied"});
         const {_id}= req.user;
-        const bookings= await (await Bookings.find({owner:_id}).populate('car user').select("-user.password")).sort({createdAt:-1});
+        const bookings= await Bookings.find({owner:_id}).populate('car user').sort({createdAt:-1});
         res.json({success:true,bookings});
     } catch (error) {
         console.log(error.message);

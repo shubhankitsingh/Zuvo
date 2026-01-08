@@ -1,24 +1,33 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import NavbarOwner from '../../components/owner/NavbarOwner'
 import Sidebar from '../../components/owner/Sidebar'
 import { Outlet } from 'react-router-dom'
+import { useAppContext } from '../../context/AppContext'
 
+/**
+ * Layout component for the owner dashboard
+ * Provides the main layout structure with navbar, sidebar, and content area
+ * Also handles authentication check to ensure only owners can access this layout
+ */
 const Layout = () => {
+  const {isOwner, navigate} = useAppContext()
+
+  /**
+   * Effect hook to protect owner routes
+   * Redirects non-owner users to the home page
+   */
+  useEffect(()=>{
+    if(!isOwner){
+      navigate('/')
+    }
+  },[isOwner])
   return (
-    <div className='flex flex-col min-h-screen'>
-        {/* Top navigation bar for owner dashboard */}
-        <NavbarOwner />
-        
-        {/* Main content area with sidebar and page content */}
-        <div className='flex flex-1'>
-            {/* Left sidebar with navigation */}
-            <Sidebar/>
-            
-            {/* Main content area where child routes render */}
-            <div className='flex-1 overflow-auto'>
-                <Outlet />
-            </div>
-        </div>
+    <div className='flex flex-col'>
+      <NavbarOwner />
+      <div className='flex'>
+        <Sidebar />
+        <Outlet />
+      </div>
     </div>
   )
 }

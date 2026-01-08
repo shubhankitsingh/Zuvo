@@ -1,83 +1,78 @@
-// Contoling user-related operations, routes will call these functions
+import User from "../models/user.js"
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import Car from "../models/Car.js";
 
-import User from "../models/user.js";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 
-// Helper function to generate JWT token
-
-const generateToken=(userId)=>{
-    const payload=userId;
-    return jwt.sign(payload, process.env.JWT_SECRET);
+// Generate JWT Token
+const generateToken = (userId)=>{
+    const payload = userId;
+    return jwt.sign(payload, process.env.JWT_SECRET)
 }
 
-// Register new user
-
-export const registerUser = async(req,res)=>{
+// Register User
+export const registerUser = async (req, res)=>{
     try {
-        const {name,email,password}= req.body;
-        // Basic input validation
-        if(!name ||!email ||!password || password.length<6){
-            return res.json({success:false,message:"Invalid input data. Password must be at least 6 characters long."});
+        const {name, email, password} = req.body
+
+        if(!name || !email || !password || password.length < 8){
+            return res.json({success: false, message: 'Fill all the fields'})
         }
-        // Check if user already exists
-        const userExists= await User.findOne({ email });
+
+        const userExists = await User.findOne({email})
         if(userExists){
-            return res.json({success:false,message:"User already exists with this email."});
+            return res.json({success: false, message: 'User already exists'})
         }
-        // Hash the password before saving 
-        const hashedPassword= await bcrypt.hash(password,10);
 
-        // Create new user
-        const user =await User.create({
-            name,
-            email,
-            password:hashedPassword
-        });
+        const hashedPassword = await bcrypt.hash(password, 10)
+        const user = await User.create({name, email, password: hashedPassword})
+        const token = generateToken(user._id.toString())
+        res.json({success: true, token})
 
-        // Respond with success message and generate token usign JWT
-        const token=generateToken(user._id.toString());
-        res.json({success:true,token});
     } catch (error) {
         console.log(error.message);
-        res.json({success:false,message:error.message});
+        res.json({success: false, message: error.message})
     }
 }
 
-// Login existing user
-
-export const loginUser= async(req,res)=>{
+// Login User 
+export const loginUser = async (req, res)=>{
     try {
-        const {email,password}= req.body;
-        // Basic input validation
-        if(!email ||!password){
-            return res.json({success:false,message:"Invalid input data."});
-        }
-        const user= await User.findOne({ email });
+        const {email, password} = req.body
+        const user = await User.findOne({email})
         if(!user){
-            return res.json({success:false,message:"User does not exist with this email."});
+            return res.json({success: false, message: "User not found" })
         }
-        const isMatch =await bcrypt.compare(password,user.password);
+        const isMatch = await bcrypt.compare(password, user.password)
         if(!isMatch){
-            return res.json({success:false,message:"Incorrect password."});
+            return res.json({success: false, message: "Invalid Credentials" })
         }
-        // Generate token
-        const token=generateToken(user._id.toString());
-        res.json({success:true,token});
+        const token = generateToken(user._id.toString())
+        res.json({success: true, token})
     } catch (error) {
         console.log(error.message);
-        res.json({success:false,message:error.message});
+        res.json({success: false, message: error.message})
     }
 }
 
-// Get user data using userId from JWT token
-
-export const getUserData= async(req,res)=>{
+// Get User data using Token (JWT)
+export const getUserData = async (req, res) =>{
     try {
-        const {user}=req; // Assuming userId is attached to req in auth middleware(executed before executing controller function we we hit the api routes)
-        res.json({success:true,user});
+        const {user} = req;
+        res.json({success: true, user})
     } catch (error) {
         console.log(error.message);
-        res.json({success:false,message:error.message});
+        res.json({success: false, message: error.message})
+    }
+}
+
+// Get All Cars for the Frontend
+export const getCars = async (req, res) =>{
+    try {
+        const cars = await Car.find({isAvailable: true})
+        res.json({success: true, cars})
+    } catch (error) {
+        console.log(error.message);
+        res.json({success: false, message: error.message})
     }
 }

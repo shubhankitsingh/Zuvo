@@ -133,12 +133,12 @@ export const getDashboardData= async (req,res)=>{
         if(role!=='owner'){
             return res.json({success:false,message:"Only owners can access dashboard data"});
         }
-        const car=await Car.find({owner:_id});
+        const cars=await Car.find({owner:_id});
         const bookings= await Bookings.find({owner:_id}).populate('car').sort({createdAt:-1});
 
-        const pendingBookings= Bookings.find({owner:_id, status:"pending"});
-        const confirmedBookings= Bookings.find({owner:_id, status:"confirmed"});
-        const cancelledBookings= Bookings.find({owner:_id, status:"cancelled"});
+        const pendingBookings= await Bookings.find({owner:_id, status:"pending"});
+        const confirmedBookings= await Bookings.find({owner:_id, status:"confirmed"});
+        const cancelledBookings= await Bookings.find({owner:_id, status:"cancelled"});
 
         //monthly revernue
         const monthlyRevenues= bookings.slice().filter(booking=>booking.status==='confirmed').reduce((acc,booking)=> acc+booking.price,0);
@@ -163,7 +163,7 @@ export const getDashboardData= async (req,res)=>{
 
 export const  updateProfilePicture= async(req,res)=>{
     try {
-        const {_id} =user.req;
+        const {_id} = req.user;
 
         const imageFile =req.file;
         // Uploading image to Imagekit for optimization

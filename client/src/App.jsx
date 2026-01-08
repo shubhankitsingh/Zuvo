@@ -12,17 +12,22 @@ import AddCar from './pages/owner/AddCar';
 import ManageCars from './pages/owner/ManageCars';
 import ManageBooking from './pages/owner/ManageBooking';
 import Login from './components/Login';
+import { useAppContext } from './context/AppContext';
+import { Toaster } from 'react-hot-toast';
 const App = () => {
 
   // creating props state to pass to Navbar
-  const [showLogin,setShowLogin]= useState(false);
+  const {showLogin} =useAppContext();
   const isOwnerPath= useLocation().pathname.startsWith('/owner'); //To hide navbar in owner dashboard
   return (
     <>
+      {/* Toaster component to display toast notifications */}
+      <Toaster />
+      
       {/* Only show login component when showLogin is true */}
-      {showLogin && <Login setShowLogin={setShowLogin}/>}
+      {showLogin && <Login/>}
 
-      {!isOwnerPath &&  <Navbar setShowLogin={setShowLogin}/>} {/* only show navbar when not on owner page*/}
+      {!isOwnerPath &&  <Navbar />} {/* only show navbar when not on owner page*/}
       {/* Routes for different pages */}
       <Routes>
         <Route path='/' element={<Home/>} />
@@ -32,9 +37,9 @@ const App = () => {
 
         <Route path='/owner' element ={<Layout/>}>
         <Route index element ={<Dashboard/>}/>
-        <Route path='manage-car' element={<ManageCars/>} />
+        <Route path='manage-cars' element={<ManageCars/>} />
         <Route path='add-car' element={<AddCar/>} />
-        <Route path='manage-booking' element={<ManageBooking/>} />
+        <Route path='manage-bookings' element={<ManageBooking/>} />
         </Route>
         
       </Routes>

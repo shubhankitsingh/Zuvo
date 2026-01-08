@@ -12,7 +12,7 @@ export const protect =async(req,res,next)=>{
     }
     // Verify token
     try {
-        const userId = jwt.decode(token, process.env.JWT_SECRET);
+        const userId = jwt.verify(token, process.env.JWT_SECRET);
 
         if(!userId) return res.json({success:false,message:"not authorized"});
 
